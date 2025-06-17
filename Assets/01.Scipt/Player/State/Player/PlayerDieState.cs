@@ -26,8 +26,6 @@ public class PlayerDieState : PlayerState
             Time.timeScale = 0;
             Cursor.visible = true;         
             Cursor.lockState = CursorLockMode.None;
-            PlayerComboSystem.Instance.CURRENTComboStr = "D";
-            PlayerComboSystem.Instance._CurrentComboStat = 0;
             _player.gameObject.SetActive(false);
         }
     }

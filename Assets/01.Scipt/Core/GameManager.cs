@@ -28,22 +28,13 @@ public class GameManager : MonoBehaviour
     public float expValue;
     
     public float GetBallPercent { get; set; }
-    [SerializeField] private TextMeshProUGUI _timeTxt;
     [SerializeField] private LevelSystem levelSystem;
     [SerializeField] private Slider _slider;
-
-    [SerializeField] private TextMeshProUGUI _maxLevelTxt;
-    [SerializeField] private TextMeshProUGUI _maxComboTxt;
-    [SerializeField] private TextMeshProUGUI _maxTimeTxt;
-    [SerializeField] private TextMeshProUGUI _currentComboTxt;
+    
     public bool isEnd { get; set; } = false;
     private void Awake()
     {
         instance = this;
-       _slider.maxValue = nextLevel;
-       _levelTxt.text = $"Level : {level}";
-       _currentExptxt.text = $"Exp : {exp} : {nextLevel}";
-       PlayerComboSystem.Instance.maxComboStr = "D";
     }
 
     private void Start()
@@ -57,19 +48,6 @@ public class GameManager : MonoBehaviour
            endTime += (int)Time.deltaTime;
     
            expValue = Mathf.Lerp(expValue, exp,  10 * Time.deltaTime);
-           _currentComboTxt.text = $"{PlayerComboSystem.Instance.CURRENTComboStr}";
-           _currentComboTxt.color = PlayerComboSystem.Instance._txtColor;
-           _maxLevelTxt.text = $"최대레벨 : {level}";
-           _maxComboTxt.text = $"최대 콤보레벨 : {PlayerComboSystem.Instance.maxComboStr}";
-           _maxTimeTxt.text = $"최대시간 : {(int)GameTimeManager.Instance.Gametime}";
-
-           _slider.value = expValue;
-           PlayerRecordSendManager.Instance.FixRecordMT($"최대시간 : {(int)GameTimeManager.Instance.maxTime}");
-           PlayerRecordSendManager.Instance.FixRecordMS($"최대콤보레벨 : {PlayerComboSystem.Instance.maxRecordComboStr}");
-           {
-                GameTimeManager.Instance.TickTime();
-                _timeTxt.text = $"{(int)GameTimeManager.Instance.Gametime}초";
-           }
        }
     
        public void GetExp()

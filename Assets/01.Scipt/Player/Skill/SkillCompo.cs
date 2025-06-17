@@ -23,8 +23,6 @@ public abstract class SkillCompo : MonoBehaviour
     [field:  SerializeField] public List<string> skillEffectName { get; set; } 
 
     public int currentSkillEffectNameIdx { get; set; }
-
-    public Lifesteal _stealCompo;
     
 
     public void SkillUpdate()

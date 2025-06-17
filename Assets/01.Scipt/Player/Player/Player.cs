@@ -20,8 +20,6 @@ namespace _01.Scipt.Player.Player
     
         public EntitySkillCompo _skillCompo { get; private set; }
     
-        public MouseBarrerSkill _barrerSkill { get; private set; }
-    
         public float rollingVelocity = 12f;
         public bool _isSkilling { get;  set; }
 
@@ -74,8 +72,6 @@ namespace _01.Scipt.Player.Player
 
         protected override void HandleHit()
         {
-            PlayerComboSystem.Instance.ReduceCombo(15);
-            AudioManager.Instance.PlaySFX("HitSound");
         }
 
         protected override void HandleDead()

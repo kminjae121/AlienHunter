@@ -62,7 +62,6 @@ public class EntitySkillCompo : MonoBehaviour, IEntityComponet, IAfterInit
 
     private void Start()
     {
-        BaseStatLibrary.instance.baseTxt.GetValueOrDefault("SkillDamage").text = $"스킬데미지 : {BaseskillDamage}";
     }
 
     public void AddSkill(SkillSO skillSO)
@@ -113,8 +112,6 @@ public class EntitySkillCompo : MonoBehaviour, IEntityComponet, IAfterInit
     {
         skillDamage += currentValue - previousValue;
         BaseskillDamage += currentValue - previousValue;
-        
-        BaseStatLibrary.instance.baseTxt.GetValueOrDefault("SkillDamage").text = $"스킬데미지 : {BaseskillDamage}";
     }
    
     public void AfterInit()
