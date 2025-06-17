@@ -7,133 +7,86 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour, IEntityComponet, IAfterInit
 {
-    [field: SerializeField] public Rigidbody _rbcompo { get; private set; }
-    [SerializeField] private float rotationSpeed = 8f;
-    private float moveSpeed;
-    private float rollingSpeed;
-    public bool CanMove { get; set; } = true;
+        [SerializeField] private float moveSpeed = 8f, gravity = -9.81f;
+        [SerializeField] private float rotationSpeed = 8f;
+        [SerializeField] private CharacterController characterController;
 
-    private EntityAnimator _animatorCompo;
-    private EntityAnimatorTrigger _triggerCompo;
-    private Vector3 _autoMovement;
+        public bool CanManualMovement { get; set; } = true;
+        private Vector3 _autoMovement;
+        public bool IsGround => characterController.isGrounded;
 
-    public Vector3 _velocity { get; set; }
-    public Vector3 Velocity => _velocity;
+        private Vector3 _velocity;
+        public Vector3 Velocity => _velocity;
+        
+        private float _verticalVelocity;
+        private Vector3 _movementDirection;
 
-    public bool CanManualMovement { get; set; } = true;
-    
-
-    public bool IsRolling { get; set; } = false;
-    private Player _entity;
-    
-    Vector2 currentBlend;
-    [SerializeField] float blendSpeed = 10f;
-
-    [SerializeField] private StatSO _moveSpeedStat;
-    [SerializeField] private StatSO _rollingSpeedStat;
-    [SerializeField] private EntityStat _stat;
-    private Vector3 _movementDirection;
-
-    public void Initialize(Entity entity)
-    {
-        _entity = entity as Player;
-    }
-
-    private void Start()
-    {
-        _triggerCompo = _entity.GetCompo<EntityAnimatorTrigger>();
-        _animatorCompo = _entity.GetCompo<EntityAnimator>();
-        moveSpeed = _stat.GetStat(_moveSpeedStat).Value;
-        _triggerCompo.OnMove += PlayWalkSound;
-    }
-
-    private void OnDestroy()
-    {
-        _triggerCompo.OnMove -= PlayWalkSound;
-    }
-
-
-    public void SetMove(float XMove, float ZMove)
-    {
-        if (_entity._isSkilling == false)
+        private Entity _entity;
+        
+        public bool CanMove { get; set; }
+        public void Initialize(Entity entity)
         {
-            _movementDirection.x = XMove;
-            _movementDirection.z = ZMove;
+            _entity = entity;
         }
-    }
 
-    public void PlayWalkSound()
-    {
-        AudioManager.Instance.PlaySFX("WalkSound",0.2f);
-    }
-    private void Update()
-    {
-        Vector2 rawInput = _entity.PlayerInput.MovementKey.normalized;
-        
-        currentBlend = Vector2.Lerp(currentBlend, rawInput, Time.deltaTime * blendSpeed);
-        
-        _animatorCompo.animator.SetFloat("Horizon", currentBlend.x);
-        _animatorCompo.animator.SetFloat("Vertical", currentBlend.y);
-    }
+        public void SetMovementDirection(Vector2 movementInput)
+        {
+            _movementDirection = new Vector3(movementInput.x, 0, movementInput.y).normalized; 
+        }
 
-    private void FixedUpdate()
-    {
-        if (_entity._isSkilling == false)
+        private void FixedUpdate()
         {
             CalculateMovement();
-        
-            _rbcompo.linearVelocity = new Vector3(transform.TransformDirection(_velocity).x,
-                _rbcompo.linearVelocity.y, transform.TransformDirection(_velocity).z);   
+            ApplyGravity();
+            Move();
         }
-    }
 
-    public void MoveToEntity(Vector3 target)
-    {
-        _entity.transform.position =
-           Vector3.MoveTowards(_entity.transform.position, target, 60 * Time.deltaTime);
-    }
-    
-    public void LookAt(Vector3 entity)
-    {
-        Vector3 targetPos = entity;
-        Vector3 direction = targetPos - transform.position;
-        direction.y = 0;
-
-        transform.rotation = Quaternion.LookRotation(direction.normalized);
-    }
-    private void CalculateMovement()
-    {
-        if (CanMove && _entity._isSkilling == false) 
+        private void CalculateMovement()
         {
-
-            if (CanManualMovement)
+            if (CanMove == true)
             {
-                _velocity = Quaternion.Euler(0, 0, 0) * _movementDirection;
-                _velocity *= moveSpeed;
-            }
+                if (CanManualMovement)
+                {
+                    _velocity = Quaternion.Euler(0, -45f, 0) * _movementDirection;
+                    _velocity *= moveSpeed * Time.fixedDeltaTime;    
+                }
+                else
+                {
+                    _velocity = _autoMovement * Time.fixedDeltaTime;
+                }
             
+                if (_velocity.magnitude > 0)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(_velocity);
+                    Transform parent = _entity.transform;
+                    parent.rotation = Quaternion.Lerp(parent.rotation, targetRotation, Time.fixedDeltaTime * rotationSpeed);
+                }
+            }
+        }
+        
+        private void ApplyGravity()
+        {
+            if (IsGround && _verticalVelocity < 0)
+                _verticalVelocity = -0.03f;
             else
-            {
-                _velocity = _autoMovement * Time.fixedDeltaTime;
-            }
+                _verticalVelocity += gravity * Time.fixedDeltaTime;
+            
+            _velocity.y = _verticalVelocity;
+        }
+        
+        private void Move()
+        {
+            characterController.Move(_velocity);
+        }
+        
+        public void StopImmediately()
+        {
+            _movementDirection = Vector3.zero;
+        }
 
-            if(IsRolling)
-            {
-                _velocity = Quaternion.Euler(0, 0f, 0) * _movementDirection;
-                _velocity *= rollingSpeed;
-            }
+        public void SetAutoMovement(Vector3 autoMovement) => _autoMovement = autoMovement;
+        public void AfterInit()
+        {
             
         }
-    }
-    
-
-    public void StopImmediately()
-    {
-        _velocity = Vector3.zero;
-    }
-
-    public void AfterInit()
-    {
-        
-    }
 }

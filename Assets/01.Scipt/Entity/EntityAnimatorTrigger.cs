@@ -20,6 +20,7 @@ public class EntityAnimatorTrigger : MonoBehaviour, IEntityComponet
 
     private Entity _entity;
     
+    public event Action<bool> OnRollingStatusChange;
 
     public void Initialize(Entity entity)
     {
@@ -33,8 +34,8 @@ public class EntityAnimatorTrigger : MonoBehaviour, IEntityComponet
     
     private void Move()=> OnMove?.Invoke();
     
-    private void RollingStart() => OnRollStart?.Invoke();
-    private void RollingEnd() => OnRollingStopping?.Invoke();
+    private void RollingStart() => OnRollingStatusChange?.Invoke(true);
+    private void RollingEnd() => OnRollingStatusChange?.Invoke(false);
     
     private void AttackEnd() => OnAttackTriggerEnd?.Invoke();
     

@@ -3,38 +3,50 @@ using UnityEngine;
 
 public class PlayerRollState : PlayerState
 {
-
+    private CharacterMovement _movement;
+    private bool _isRolling;
+    private Vector3 _rollingDirection;
+        
     public PlayerRollState(Entity entity, int animationHash) : base(entity, animationHash)
     {
-        
+        _movement = entity.GetCompo<CharacterMovement>();
     }
-
-    private PlayerRollCompo _rollCompo;
 
     public override void Enter()
     {
         base.Enter();
-        _player._collider.enabled = false;
-        _rollCompo = _entity.GetCompo<PlayerRollCompo>();
-        _player._movement._rbcompo.useGravity = false;
-    }
+        _movement.CanManualMovement = false;
+        _isRolling = false;
 
-    public override void Update()
-    {
-        if (_isTriggerCall)
-        {
-            _rollCompo.isRoll = false;
-            _player._isSkilling = false;
-            _player._movement._rbcompo.linearVelocity = Vector3.zero;
-            _player._collider.enabled = true;
-            _player._movement._rbcompo.useGravity = true;
-            _player._movement.CanMove = true;
-            _player.ChangeState("IDLE");
-        }
+        _animatorTrigger.OnRollingStatusChange += HandleRollingStatusChange;
+        _rollingDirection = _player.transform.forward;
     }
 
     public override void Exit()
     {
+        _movement.CanManualMovement = true;
+        _animatorTrigger.OnRollingStatusChange -= HandleRollingStatusChange;
         base.Exit();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+            
+        if(_isTriggerCall)
+            _player.ChangeState("IDLE");
+    }
+
+    private void HandleRollingStatusChange(bool isActive)
+    {
+        if (_isRolling != isActive && isActive)
+        {
+            _movement.SetAutoMovement(_rollingDirection * _player.rollingVelocity);
+        }
+        else if(isActive == false)
+        {
+            _movement.SetAutoMovement(_rollingDirection * (_player.rollingVelocity * 0.2f));
+        }
+        _isRolling = isActive;   
     }
 }

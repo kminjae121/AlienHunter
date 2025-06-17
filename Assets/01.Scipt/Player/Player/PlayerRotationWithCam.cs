@@ -34,7 +34,7 @@ public class PlayerRotationWithCam : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, cam, 0.1f);
 
         
-        if (_movement._velocity != Vector3.zero)
+        if (_movement.Velocity != Vector3.zero)
         {
             Quaternion player = Quaternion.Euler(0f, _yRotation, 0f);
             orientation.rotation = Quaternion.Slerp(orientation.rotation, player, 0.08f);
