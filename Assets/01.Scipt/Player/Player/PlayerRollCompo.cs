@@ -46,7 +46,6 @@ public class PlayerRollCompo : MonoBehaviour, IEntityComponet, IAfterInit
             isRoll = true;
             _entity._movement.CanManualMovement = false;
             _entity._isSkilling = true;
-            _entity._attackCompo.IsAttack = false;
             _entity.ChangeState("ROLL");
         }
     }

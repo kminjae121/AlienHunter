@@ -1,7 +1,7 @@
 using Member.Kmj._01.Scipt.Entity.AttackCompo;
 using UnityEngine;
 
-public class PlayerMoveState : PlayerCanAttackState
+public class PlayerMoveState : PlayerState
 {
 
     private CharacterMovement _movement;

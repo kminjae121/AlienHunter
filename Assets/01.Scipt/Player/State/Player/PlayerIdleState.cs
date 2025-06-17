@@ -2,7 +2,7 @@ using Member.Kmj._01.Scipt.Entity.AttackCompo;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
-public class PlayerIdleState : PlayerCanAttackState
+public class PlayerIdleState : PlayerState
 {
     private CharacterMovement _movement;
     public PlayerIdleState(Entity entity, int animationHash) : base(entity, animationHash)
