@@ -7,14 +7,7 @@ public class PlayerInputSO : ScriptableObject, Controls.IPlayerActions
 {
     [SerializeField] private LayerMask whatIsGround;
 
-    public event Action OnAttackPressd,
-        OnInteracetPressd,
-        OnSheldPressd,
-        OnSheldCanceld,
-        OnSlashPressed,
-        OnChargeAttackCanceled,
-        OnStrongAttackPressed,
-        OnHighAttackPresssed;
+    public event Action<bool> OnAttackPressd;
 
     public event Action OnFirstSelect;
     public event Action OnSecondSelect;
@@ -44,16 +37,17 @@ public class PlayerInputSO : ScriptableObject, Controls.IPlayerActions
         _control.Player.Disable();
     }
 
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        
+    }
+
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (context.performed)
-            OnAttackPressd?.Invoke();
-    }
-
-    public void OnInteract(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-            OnInteracetPressd?.Invoke();
+            OnAttackPressd?.Invoke(true);
+        else if(context.canceled)
+                OnAttackPressd?.Invoke(false);
     }
 
 
@@ -66,34 +60,6 @@ public class PlayerInputSO : ScriptableObject, Controls.IPlayerActions
     public void OnMousePos(InputAction.CallbackContext context)
     {
         _screenPos = context.ReadValue<Vector2>();
-    }
-
-    public void OnSheldSkill(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-            OnSheldPressd?.Invoke();
-        else if (context.canceled)
-            OnSheldCanceld?.Invoke();
-    }
-    
-
-    public void OnStrongAttackSkill(InputAction.CallbackContext context)
-    {
-        if(context.performed)
-            OnStrongAttackPressed?.Invoke();
-    }
-
-
-    public void OnChargeSklil(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-            OnSlashPressed?.Invoke();
-    }
-
-    public void OnHighAttack(InputAction.CallbackContext context)
-    {
-        if(context.performed)
-            OnHighAttackPresssed?.Invoke();
     }
 
     public void OnSelectFirst(InputAction.CallbackContext context)

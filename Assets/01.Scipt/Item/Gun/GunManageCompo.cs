@@ -27,6 +27,14 @@ public class GunManageCompo : MonoBehaviour, IEntityComponet
     }
     public bool canShoot { get; set; }
 
+    private void Awake()
+    {
+        shootSpeed = currentGun.shootSpeed;
+        maxAmmo = currentGun.maxAmmo;
+        reloadTime = currentGun.reloadTime;
+        currentAmmo = maxAmmo;
+    }
+
     public void EquipNewWeapon(int selectGunIdx)
     {
         currentGun = invenGun[selectGunIdx];
@@ -34,15 +42,15 @@ public class GunManageCompo : MonoBehaviour, IEntityComponet
         shootSpeed = currentGun.shootSpeed;
         maxAmmo = currentGun.maxAmmo;
         reloadTime = currentGun.reloadTime;
-        maxAmmo = currentAmmo;
+        currentAmmo = maxAmmo;
     }
 
     public void AutoReload()
     {
-        if (currentAmmo >= 0)
+        if (currentAmmo <= 0)
         {
             canShoot = false;
-            _entity.ChangeState("RELOAD");
+            //_entity.ChangeState("RELOAD");
             StartCoroutine(ReloadAmmo());
         }
         else
@@ -66,6 +74,7 @@ public class GunManageCompo : MonoBehaviour, IEntityComponet
         yield return new WaitForSeconds(reloadTime);
 
         currentAmmo = maxAmmo;
+        canShoot = true;
     }
 
 }

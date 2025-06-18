@@ -7,27 +7,64 @@ namespace _01.Scipt.Item.Gun
     public class UseGunCompo : MonoBehaviour
     {
         private GunManageCompo _currentGunCompo;
-        
+        [SerializeField] private PlayerInputSO _inputReader;
+
+        private Coroutine shootCoroutine;
+
+        private void Awake()
+        {
+            _currentGunCompo = GetComponent<GunManageCompo>();
+            _inputReader.OnAttackPressd += ShootGun;
+        }
+
+        private void OnDestroy()
+        {
+            _inputReader.OnAttackPressd -= ShootGun;
+        }
+
         private void Update()
         {
             _currentGunCompo.AutoReload();
         }
 
-        public void ShootGun(bool istrue)
+        public void ShootGun(bool isPressed)
         {
-            while (istrue)
+            if (isPressed)
             {
-                Shoot();
+                if (shootCoroutine == null)
+                {
+                    shootCoroutine = StartCoroutine(ShootLoop());
+                }
+            }
+            else
+            {
+                if (shootCoroutine != null)
+                {
+                    StopCoroutine(shootCoroutine);
+                    shootCoroutine = null;
+                }
             }
         }
 
-
-        private IEnumerator Shoot()
+        private IEnumerator ShootLoop()
         {
-            _currentGunCompo.currentAmmo -= 1;
-            
-            yield return new WaitForSeconds(_currentGunCompo.shootSpeed);
-            
+            while (true)
+            {
+                if (_currentGunCompo.currentAmmo > 0)
+                {
+                    _currentGunCompo.currentAmmo -= 1;
+                    Debug.Log("빵"); 
+                }
+                else
+                {
+                    Debug.Log("탄약 없음");
+                    break; 
+                }
+
+                yield return new WaitForSeconds(_currentGunCompo.shootSpeed);
+            }
+
+            shootCoroutine = null; 
         }
     }
 }
