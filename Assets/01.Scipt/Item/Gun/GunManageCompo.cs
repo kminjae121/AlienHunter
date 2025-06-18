@@ -10,13 +10,15 @@ public class GunManageCompo : MonoBehaviour, IEntityComponet
 {
     [field: SerializeField] public GunSO currentGun;
     [field: SerializeField] public List<GunSO> invenGun;
+
+    [field: SerializeField] public GameObject _bulletPrefab;
     
     [field: SerializeField] public float shootSpeed;
     [field: SerializeField] public int maxAmmo;
     
     [field: SerializeField] public float reloadTime;
 
-    private int currentAmmo;
+    public int currentAmmo { get; set; }
 
     private Player _entity;
     public void Initialize(Entity entity)
@@ -56,7 +58,6 @@ public class GunManageCompo : MonoBehaviour, IEntityComponet
 
     private void Update()
     {
-        AutoReload();
     }
 
 
